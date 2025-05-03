@@ -1,0 +1,498 @@
+---
+title: "COVID-19 a egzamin dojrzałości"
+author: "Julia Winiarz"
+date: "2024-01-03"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 6
+    number_sections: false
+    theme: sandstone
+    css: styles.css
+  
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# <br><font color=#D96675>1. Wprowadzenie</font> 
+
+Pierwszy przypadek COVID-19 w Polsce został potwierdzony 4 marca 2020 roku. Od tego dnia życie Polaków na długi czas się zmieniło. Pandemia COVID-19 wpłynęła na życie społeczne, gospodarcze i sytację zdrowotną w Polsce. Rząd podjął różne środki w celu ograniczenia rozprzestrzeniania się wirusa, takie jak wprowadzenie obostrzeń, zamknięcie granic, czy wprowadzenie zdalnego nauczania w szkołach.  
+
+Dla przypomnienia...  
+
+Uczniowie podczas pandemii okresowo wysyłani byli na naczuczanie zdalne, by zaprzestać rozprzestrzenianiu się wirusa.
+Ograniczano kontakty międzyludzkie do spotkań przed komputerem. I w taki właśnie sposób odbywała się nauka. Wszelkie kartkówki, zaliczenia, czy sprawdziany przeprowadzane były na platformach online, gdzie nauczyciele nie mogli kontrolować ich samodzielności. Stąd nasuwać mogą się następujące pytania:
+
+* Czy uczniowie zostali właściwie wykształceni i przygotowani do egzaminów sprawdzających ich wiedzę i decydujących o ich przyszłości?
+- Czy to, że nie mogli doswiadczyć stresu związanego ze sprawdzianami, czy innymi zaliczeniami wpłynęło negatywnie na egzaminy pisane stacjonarnie, gdyż uczniowie nie mieli szansy się z nim oswoić? 
++ Czy to, że mogli korzystać z własnych materiałów czy zasobów internetu, nie pogorszyło ich motywacji do nauki i przyswajania wiedzy?  
+
+Przeanalizujmy dane i przyjrzyjmy się wynikom...  
+
+#### <font color=#D96675> Czy nauczanie zdalne wpłynęło na gorszy poziom wykształcenia Polaków? </font> 
+
+Mogłoby się wydawać, że tradycyjna nauka stacjonarna to najlepsza forma nauczania, ale czy napewno? Może system edukacji powinien przejść reformę i dać 
+uczniom wybór jak i gdzie chcą się uczyć?
+
+W celu prawidłowej analizy wyników należy pamiętać, że ze względu na pandemię:
+
+* W roku 2020 egzamin maturalny przeprowadzony był jedynie w formie pisemnej.
+- W roku 2021 i 2022 zakres materiału do egzaminu ósmoklasisty i maturalnego był zawężony i również nie odbywały się egzaminy ustne.
++ W roku 2023 zakres materiału do egzaminu ósmoklasisty i maturalnego był zawężony.
+
+# <br><font color=#D96675>2. Edukacja przed pandemią</font> 
+
+W Polsce panowało tradycjne nauczanie stacjonarne. Uczniowie chodzili do szkół,
+widywali się z rówieśnikami, nauczycielami i pisali tradycyjne sprawdziany i 
+egzaminy na kartkach. 
+
+Analizując ile osób przystąpiło a ile zdało brano pod uwagę wartości z lat 2015-2023. Natomiast analizie wyników egzaminu maturalnego podlegają wartości tylko matur w formule 2015, czyli z lat 2015-2023, ale z roku 2023 analizowane były wyniki tylko osób, które ukończyły technikum, gdyż licealiści zdawali maturę w nowej formule 2023.
+
+
+### <font color=#D96675>2.1 W jakich latach przed pandemią do matury przystąpiło najmniej osób?</font> 
+
+```{r wczytywanie danych matura, echo=FALSE, message = FALSE}
+library(readxl)
+dane <- read_excel(
+  path = "/Users/julkakulka/Desktop/studia/R/ileprzystąpiło.xlsx"
+  ) 
+k_m <- read_excel(
+  path = "/Users/julkakulka/Desktop/studia/R/k_m.xlsx"
+  ) 
+library(dplyr)
+dane_przystąpiło_matura <- dane[1:28, ]
+dane_przystąpiło_matura <- select(dane_przystąpiło_matura, plec, rok, wartosc) 
+dane_zdało_matura <- dane[29:56, ]
+dane_zdało_matura <- select(dane_zdało_matura, plec, rok, wartosc) 
+dane_przystąpiło_matura <- rename(dane_przystąpiło_matura, płeć = plec, wartość = wartosc)
+dane_zdało_matura <- rename(dane_zdało_matura, płeć = plec, wartość = wartosc)
+```
+
+**Tabela przedstawia liczbę osób przystępujących do matury w danych latach, z podziałem na płeć. Dane są posortowane w kolejności rosnącej.**
+
+
+```{r printowanie dancyh najmniej, echo=FALSE, message=FALSE }
+library(kableExtra)
+library(plotly)
+library(DT)
+datatable(dane_przystąpiło_matura %>% 
+  filter(rok >= 2015, rok <= 2019) %>%
+  arrange(wartość))
+  
+```
+
+**ANALIZA**
+
+* Nawet najmniejsza liczba kobiet przystępujących w tych latach do egzaminu jest większa niż największa liczba mężczyzn.
+- Najmniej mężczyzn przystąpiło do matury w roku 2018 - 112 592, kobiet w roku 2019 - 134 351.
++ Najwięcej kobiet przystąpiło w roku 2015 - 151 783 - jest to zarazem najwyższa wartość w całej tabeli, również najwięcej mężczyzn przystąpiło do matury w tym roku - 123 785.
+
+
+
+<br>
+**Podsumowaując przed pandemią do matury średnio przystapiło:**
+```{r srednie przystapilo pp, echo=FALSE}
+oblicz_srednia_plecp <- function(dane_przystąpiło_matura) {
+  dane_przystąpiło_matura %>%
+    group_by(płeć) %>%
+    summarise(Średnia = mean(wartość))
+}
+wynik_srednia_plecp <- oblicz_srednia_plecp(dane_przystąpiło_matura %>% filter(rok >= 2015, rok <= 2019))
+wynik_srednia_plecp %>%
+  kbl() %>%
+  kable_styling()
+```
+
+<br>
+
+### <font color=#D96675>2.2 Ile osób przystąpiło do matury w latach 2015-2019? </font> 
+
+**Wykres przedstawia ilość osób przystępujących do matury w poszczególnych latach z podziałem na płeć.**
+
+```{r przystąpiło przed pandemią wykres, echo=FALSE, message=FALSE}
+library(ggplot2)
+library(plotly)
+k_m_pp <- plot_ly(k_m %>%
+                 filter(rok >= 2015, rok <= 2019), x = ~rok, y = ~kobiety, type = 'bar', name = 'kobiety')
+k_m_pp <- k_m_pp %>% add_trace(y = ~mężczyźni, name = 'mężczyźni')
+k_m_pp <- k_m_pp %>% layout(yaxis = list(title = 'ile osób'), barmode = 'group')
+
+k_m_pp
+```
+
+
+**ANALIZA**
+
+* Jak widać znacznie mniej mężczyzn niż kobiet każdego roku przystępowało do egzaminu maturalnego. Może to wynikać z przyczyn naturalnych - po prostu w tych latach rodziło się mniej mężczyzn niż kobiet lub sprawdza się stereotyp, że kobiety częściej zdobywają wyższe wykształcenie niż mężczyźni. Może być też tak, że mężczyźni częściej wybierają szkoły branżowe albo techniczne sugerując się koniecznością szybszego zdobycia zawodu, a kobiety preferują wykształcenie ogólne, a tym samym odwlekają w czasie wybór drogi zawodowej.
+- Z roku na rok do matury przystępowało mniej osób uprawnionych.
+
+<br>
+
+### <font color=#D96675>2.3 W jakich latach zdawalność była najmniejsza?</font> 
+**Tabela przedstawia liczbę osób, które zdały maturę w danych latach, z podziałem na płeć. Dane są posortowane w kolejności rosnącej.**
+
+```{r matura zdawalność najmniej, echo = FALSE }
+datatable(dane_zdało_matura %>% 
+  filter(rok >= 2015, rok <= 2019) %>%
+  arrange(wartość))
+```
+
+**ANALIZA**
+
+* Nawet najmniejsza ilość kobiet, które zdały maturę przed pandemią jest wyższa niż największa ilość mężczyzn.
+- Najgorzej matura wypadła w roku 2018 zarówno u kobiet jak i u mężczyzn. Wówczas zdało ją 88 637 mężczyzn i 108 779 kobiet.
++ Najwięcej mężczyzn zdało maturę w roku 2015 - 91 984, a kobiet w roku 2016 - 113 787.
+
+<br>
+**Podsumowaując przed pandemią egzamin maturalny średnio zdało:**
+```{r srednie, echo=FALSE}
+oblicz_srednia_plec <- function(dane_zdało_matura) {
+  dane_zdało_matura %>%
+    group_by(płeć) %>%
+    summarise(Średnia = mean(wartość))
+}
+wynik_srednia_plec <- oblicz_srednia_plec(dane_zdało_matura %>% filter(rok >= 2015, rok <= 2019))
+wynik_srednia_plec %>%
+  kbl() %>%
+  kable_styling()
+```
+
+<br>
+
+### <font color=#D96675>2.4 Jak wyglądała zdawalność egzaminów maturalnych przed pandemią?</font> 
+A ile osób zdało maturę w latach 2015-2019?
+
+**Wykres przedstawia ilość osób, które zdały maturę w poszczególnych latach z podziałem na płeć.**
+
+```{r wykres pp zdało, echo=FALSE}
+k_m_zdało <- read_excel(
+  path = "/Users/julkakulka/Desktop/studia/R/k_m_zdało.xlsx"
+  )
+k_m_ppz <- plot_ly(k_m_zdało %>%
+                 filter(rok >= 2015, rok <= 2019), x = ~rok, y = ~kobiety, type = 'bar', name = 'kobiety')
+k_m_ppz <- k_m_ppz %>% add_trace(y = ~mężczyźni, name = 'mężczyźni')
+k_m_ppz <- k_m_ppz %>% layout(yaxis = list(title = 'ile osób'), barmode = 'group')
+
+k_m_ppz
+```
+
+**ANALIZA**
+
+* Każdego roku więcej kobiet niż mężczyzn zdawało maturę.
+- Na przestrzeni lat jednak wyniki zdawalności poszczególnych płci nie różnią się znacznie między sobą. Utrzymuje się pewien stały trend wśród kobiet i mężczyzn.
++ Różnica w zdawalności matury ze względu na płeć każdego roku to około 20 000 z korzyścią dla płci żeńskiej.
+
+<br>
+
+### <font color=#D96675>2.5 Porównanie</font> 
+
+```{r porównanie, echo = FALSE, message=FALSE}
+dane_porownanie <- read_excel(
+  path = "/Users/julkakulka/Desktop/studia/R/porownanie.xlsx"
+  ) 
+
+por <- plot_ly(dane_porownanie %>%
+                 filter(rok >= 2015, rok <= 2019), x = ~rok, y = ~przystąpiło, type = 'bar', name = 'przystapiło')
+por <- por %>% add_trace(y = ~zdało, name = 'zdało')
+por <- por %>% layout(yaxis = list(title = 'ile osób'), barmode = 'group')
+
+por
+
+```
+
+**ANALIZA**
+
+Każdego roku około 50 000 osób, które przystępowało do egzaminu maturalnego, nie zdawało go. Wyniki z poszczególnych lat nie różnią się znacząco między sobą, widać podobne tendencje. Czyli jednym słowem - sytuacja była stabilna.
+
+<br>
+
+###  <font color=#D96675>2.6 Jakie wyniki średnio osiągali maturzyści z egzaminu maturalnego na poziomie podstawowym przed pandemią?</font> 
+
+**Wykres przedstawia średnie wyniki procentowe matur w poszczególnych latach.**
+
+```{r wczytywanie danych matura wyniki, echo=FALSE}
+library(readxl)
+dane_zdawalność <- read_excel(
+  path = "/Users/julkakulka/Desktop/studia/R/średnie_wyniki_matura.xlsx"
+  )
+
+```
+
+```{r wyniki m podst, echo = FALSE}
+library(dplyr)
+dane_zdawalność <- rename(dane_zdawalność, formuła = 'formula egzaminu')
+wyniki <- dane_zdawalność %>%
+  filter(poziom_egzaminu == "podstawowy") %>%
+  filter(rodzaj_egzaminu == "pisemny") %>%
+  filter(kraj == "Polska") %>%
+  filter(plec == "ogółem") %>%
+  filter(formuła == "formuła 2015")
+
+wyniki <- select(wyniki, przedmiot, rok, wartosc)
+
+wyniki <- rename(wyniki, wartość = wartosc)
+
+wyniki <- wyniki %>%
+  mutate(wartość = paste0(wartość, "%"))
+
+```
+
+
+**Analizie podlega jedynie j.angielski, gdyż jest to najpopularniejszy wybór wśród uczniów.**
+
+```{r wyniki matura pp, echo=FALSE}
+ggplot(wyniki %>%
+         filter(rok >= 2015, rok <= 2019) %>%
+         filter(przedmiot == "język polski" | przedmiot == "język angielski" | przedmiot == "matematyka"), 
+       aes(x = rok,
+           y = wartość,
+           color = przedmiot)) +
+  geom_point(position = "identity", size = 3)
+```
+
+**ANALIZA**
+
+* Zauważyć można, że z roku na rok wyniki z j.polskiego były coraz niższe. Róznica między nimi to około 10%.
+- Wydawać by się mogło, że matematyka to trudna rzecz, a jak wskazują dane uczniowie co roku uzyskiwali średnio wynik ponad 50% z egzaminu maturalnego na poziomie podstawowym z matematyki. Wyniki utrzymują się na podobnym poziomie.
++ Język angielski na egzaminie maturalnym każdego roku wypada najlepiej z wszystkich przedmiotów.
+
+
+# <br><font color=#D96675>3. Edukacja w trakcie pandemii</font> 
+
+
+### <font color=#D96675>Sytuacja podczas pandemii COVID-19</font> 
+
+Według danych z dnia 23.03.2020 został w Polsce wprowadzony stan epidemii.
+
+link do źródła: [strona rządowa](https://www.gov.pl/web/koronawirus/wprowadzamy-stan-epidemii-w-polsce)
+
+Jak oficjalnie podaje strona rządowa gov.pl :
+
+> 1 lipca 2023 r. na terenie Polski zostaje zniesiony stan zagrożenia epidemicznego spowodowany zakażeniami wirusem SARS-CoV-2.
+
+link do źródła: [strona rządowa](https://www.gov.pl/web/rpp/koniec-stanu-zagrozenia-epidemicznego)
+
+Zatem w czasie pandemii odbyły się aż 4 egzaminy maturalne i ósmoklasisty.
+
+### <font color=#D96675>3.1 W jakich latach podczas pandemii do matury przystąpiło najwięcej osób?</font>
+
+**Tabela przedstawia liczbę osób w poszczególnych latach przystępujących do egzaminu maturalnego.**
+
+**Dane uporządkowane są malejąco.**
+
+<br>
+
+```{r pandemia przystąpiło najwięcej, echo=FALSE }
+datatable(dane_przystąpiło_matura %>% 
+  filter(rok >= 2020, rok <= 2023) %>%
+  arrange(desc(wartość)))
+```
+
+**ANALIZA**
+
+* Jak widać nic się nie zmieniło. Podczas pandemii zdecydowanie więcej kobiet niż mężczyzn przystąpiło do egzaminu maturalnego. 
+- Najwięcej - 147 760 - w roku 2021 - kobiety.
++ Najmniej - 115 130 - w roku 2023 - mężczyźni.
+* Najwięcej mężczyzn przystąpiło do matury w roku 2021.
+- Najmniej kobiet przystapiło w roku 2023 - 138 365.
++ W 2023 roku do matury przystapiło najmniej osób.
+
+<br>
+**Podsumowaując w trakcie pandemii do matury średnio przystapiło:**
+```{r srednie przystapilo p, echo=FALSE}
+wynik_srednia_plecpp <- oblicz_srednia_plecp(dane_przystąpiło_matura %>% filter(rok >= 2020, rok <= 2023))
+wynik_srednia_plecpp %>%
+  kbl() %>%
+  kable_styling()
+```
+
+### <font color=#D96675>3.2 Ile osób przystąpiło do matury w latach 2020-2023?</font>
+
+```{r pandemia m przystąpiło k/m, echo=FALSE}
+k_m_p <- plot_ly(k_m %>%
+                 filter(rok >= 2020, rok <= 2023), x = ~rok, y = ~kobiety, type = 'bar', name = 'kobiety')
+k_m_p <- k_m_p %>% add_trace(y = ~mężczyźni, name = 'mężczyźni')
+k_m_p <- k_m_p %>% layout(yaxis = list(title = 'ile osób'), barmode = 'group')
+
+k_m_p
+```
+
+**ANALIZA**
+
+* Około 20 000 więcej kobiet niż mężczyzn każdego roku przystępowało do matury.
+- Najwięcej osób przystąpiło w roku 2021.
+
+<br>
+
+### <font color=#D96675>3.3 W jakich latach maturę zdało najmniej osób?</font>
+
+**Tabela przedstawia ilość osób, które zdały maturę w poszczególnych latach z podziałem na płeć. Dane uporządkowane są w kolejności rosnącej.**
+
+<br>
+
+```{r najmniej zdało pandemia, echo=FALSE}
+datatable(dane_zdało_matura %>% 
+  filter(rok >= 2020, rok <= 2023) %>%
+  arrange(wartość))
+```
+
+**ANALIZA**
+
+* Najmniej mężczyzn zdało maturę w roku 2020 - 86 223, najwięcej zaś w roku 2023 - 97 224.
+- Najmniej kobiet zdało maturę w roku 2020 - 105 511, najwięcej w roku 2023 - 116 801.
++ Każdego roku maturę zdawało więcej kobiet niż mężczyzn, dodatkowo najwyższa wartość mężczyzn, którzy zdali jest mniejsza niż najniższa wartość kobiet, które zdały.
+
+**Podsumowaując w trakcie pandemii maturę zdało średnio:**
+
+```{r srednie p, echo=FALSE}
+wynik_srednia_plecpp <- oblicz_srednia_plec(dane_zdało_matura %>% filter(rok >= 2020, rok <= 2023))
+wynik_srednia_plecpp %>%
+  kbl() %>%
+  kable_styling()
+```
+
+### <font color=#D96675>3.4 Ile osób zdało maturę w latach 2020-2023?</font>
+
+```{r pandemia zdało m, echo = FALSE }
+k_m_pz <- plot_ly(k_m_zdało %>%
+                 filter(rok >= 2020, rok <= 2023), x = ~rok, y = ~kobiety, type = 'bar', name = 'kobiety')
+k_m_pz <- k_m_pz %>% add_trace(y = ~mężczyźni, name = 'mężczyźni')
+k_m_pz <- k_m_pz %>% layout(yaxis = list(title = 'ile osób'), barmode = 'group')
+
+k_m_pz
+```
+
+**ANALIZA**
+
+* Najmniej osób zdało maturę w 2020 roku - najwięcej w 2023
+- Widać niewielką tendencję wzrostową - zarówno wśród kobiet jak i mężczyzn, zatem mogłoby się wydawać, że uczniowie przyzwyczaili się do pandemii i nie przeszkodziła ona w osiągnięciu ich celów.
++ Różnica między zdawalnością kobiet i mężczyzn to około 20 000.
+
+<br>
+
+### <font color=#D96675>3.5 Ile przystąpiło, a ile zdało?</font>
+
+```{r porownanie p, echo = FALSE, message=FALSE}
+porp <- plot_ly(dane_porownanie %>%
+                 filter(rok >= 2020, rok <= 2023), x = ~rok, y = ~przystąpiło, type = 'bar', name = 'przystapiło')
+porp <- porp %>% add_trace(y = ~zdało, name = 'zdało')
+porp <- porp %>% layout(yaxis = list(title = 'ile osób'), barmode = 'group')
+
+porp
+
+```
+
+**ANALIZA**
+
+* Najmniejsza róznica jest zauważalna w roku 2023.
+- Zdecydowane różnice - około 50 000 osób - widać w latach 2020, 2021, czyli zaraz po wybuchu pandemii.
+
+<br>
+
+### <font color=#D96675>3.6 Wyniki matur podczas pandemii</font>
+
+* Interesuje nas zdawalność, więc pod uwagę będziemy brać tylko wyniki matur podstawowych tj. z j.polskiego, j.obcego i matematyki.
+- Analizie nie podlegają wyniki egzaminu maturalnego z 2023 roku z formułą 2023, gdyż egzamin ten różnił się pod wieloma względami od egzaminów w formule 2015 i w roku 2023 został przeprowadzony po raz pierwszy, zatem jego wyniki mogłyby zaburzyć statystyki.
++ Do analizy brany był pod uwagę jedynie wynik z języka angielskiego, gdż jest to najczęściej wybierany język obcy.
+
+<br>
+
+```{r pandemia matura wyniki, echo=FALSE}
+ggplot(wyniki %>%
+         filter(rok >= 2020, rok <= 2023) %>%
+         filter(przedmiot == "język polski" | przedmiot == "język angielski" | przedmiot == "matematyka"), 
+       aes(x = rok,
+           y = wartość,
+           color = przedmiot)) +
+  geom_point(position = "identity", size = 3)
+
+```
+
+**ANALIZA**
+
+* Każdego roku najlepiej wypadał egzamin z języka angielskiego.
+- Wyniki z języka polskiego i matematyki utrzymywały się na podobnym poziomie - oscylowały w granicach 50%-60%.
++ Wyniki matur od roku 2020 do roku 2022 były coraz lepsze, jednak w roku 2023 nastąpiło gwałtowne załamanie - wyniki pogorszyły się o prawie 10%. 
+
+# <br><font color=#D96675>4. Podsumowanie</font>
+
+### <br><font color=#D96675>4.1 Porównanie zdawalności matur w poszczególnych latach.</font>
+
+Porównajmy zatem sytację przed i w trakcie pandemii i zobaczmy, czy coś się zmieniło.
+
+<br>
+
+```{r przed i po porównanie, echo=FALSE, message=FALSE}
+wykres_zdawalność <- plot_ly(dane_porownanie, x = ~rok, y = ~zdało, name = 'zdało', type = 'scatter', mode = 'lines',
+        line = list(color = 'rgb(205, 12, 24)', width = 4)) 
+wykres_zdawalność <- wykres_zdawalność %>% add_trace(y = ~przystąpiło, name = 'przystąpiło', line = list(color = 'rgb(22, 96, 167)', width = 4)) 
+wykres_zdawalność <- wykres_zdawalność %>% layout(title = "Ile zdało a ile przystąpiło?",
+         xaxis = list(title = "rok"),
+         yaxis = list (title = "ilość"))
+wykres_zdawalność
+```
+
+**ANALIZA**
+
+* Między rokiem 2019 a 2020 w zdawalności widać gwałtowny spadek o około 10 000 osób, jednak później zdawalność z roku na rok wzrasta - tendencja wzrostowa. 
+- W roku 2023 zdawalność jest najwyższa ze wszystkich analizowanych lat.
++ Od 2015 roku do 2019 roku coraz mniej osób przystępowało do egzaminu maturalnego. Następnie od roku 2019 do roku 2021 obserwujemy znaczący wzrost, sytaucja wróciła do wartości z roku 2015. Są to ciekawe obserwacje, gdyż maturę można poprawiać, więc wyniki mogłyby wskazywać na to, że w roku 2020 i 2021 ludzie sugerowali się tym, że matura powinna być prostsza, przez nauczanie zdalne i zachęcało ich to do ponownego podejścia do matury. Jednak od roku 2021 do 2023 ponownie widać tendencję spadkową. 
+* Jednak przejdźmy do tego co najważniejsze, czyli zdawalności. Widać wręcz odwrotne wyniki niż można by się spodziewać. Można wnioskować, że nauczanie zdalne poprawiło zdawalność egzaminu maturalnego, gdyż od roku 2020 zauważyć można znaczną poprawę zdawalności. Może to wynikać z tego, że uczniowie nie musieli poświęcać czasu na często długie dojazdy do szkół, lepiej się wysypiali, ponieważ mogli wstawać na 5 minut przed zajęciami i brać w nich udział jeszcze w piżamie i mieli więcej czasu na nauke, ale i więcej czasu wolnego.
+
+
+### <br><font color=#D96675>4.2 Porównanie wyników egzaminu maturalnego</font>
+
+```{r porównanie matura wyniki przed i w trakcie polski, echo=FALSE}
+plot_ly(wyniki %>%
+          filter(przedmiot == "język polski"),
+        x = ~rok, y = ~wartość, type = 'scatter', mode = 'lines') %>%
+  layout(title = "Wyniki z j.polskiego" ,
+         xaxis = list(title = "rok"),
+         yaxis = list (title = "wynik(%)"))
+
+```
+
+**ANALIZA**
+
+Od roku 2015 do 2019 widać znaczący spadek. Wyniki z roku na rok się pogarszały, zmalały o 14%. W roku 2020 odbył się pierwszy egzamin maturalny w warunkach pandemicznych, jednak wyniki są podobne jak w roku 2019 - dla przypomnienia nie odbywały się jednie egzaminy ustne, zakres materiału był taki sam, gdyż maturzyści spędzili na nauczaniu zdalnym tylko około pół roku. Jednak od roku 2021 obserwowalne jest ponowne poprawienie wyników. W roku 2023 wyniki były wyższe o 5% niż w roku 2019. Jest to niewielka różnica, ale jak widać pandemia Covid-19 nie wpłynęła aż tak negatywnie jak mogłoby się wydawać na nauczanie języka polskiego.
+
+```{r porównanie matura wyniki przed i w trakcie matematyka, echo=FALSE}
+plot_ly(wyniki %>%
+          filter(przedmiot == "matematyka"),
+        x = ~rok, y = ~wartość, type = 'scatter', mode = 'lines') %>%
+  layout(title = "Wyniki z matematyki" ,
+         xaxis = list(title = "rok"),
+         yaxis = list (title = "wynik(%)"))
+
+```
+
+**ANALIZA**
+
+Wyniki z matematyki każdego roku kształtują się na innym poziomie, jednak widać duży spadek w roku 2023 - uzyskane w tym roku wyniki są najniższe w całej historii matury w formule 2015. Między średnim wynikiem z 2022 a 2023 roku jest różnica 7%. Podobnie pierwszy egzamin po wybuchu pandemii nie wypadł najlepiej między rokiem 2019 a 2020 jest różnica 6,1%. Od roku 2020 do 2022 średnie wyniki były lepsze. W tych latach panowało już nauczanie zdalne, zatem ponownie można wyciągnąć wnioski, że pandemia i nauczanie zdalne nie przeszkodziło uczniom w osiąganiu dobrych wyników na maturze. 
+
+```{r porównanie matura wyniki przed i w trakcie j.obce, echo = FALSE}
+plot_ly(wyniki %>%
+          filter(przedmiot == "język angielski"),
+        x = ~rok, y = ~wartość, type = 'scatter', mode = 'lines') %>%
+  layout(title = "Wyniki z języka angielskiego" ,
+         xaxis = list(title = "rok"),
+         yaxis = list (title = "wynik(%)"))
+
+```
+
+**ANALIZA**
+
+Wyniki z języka angielskiego utrzymują się na wysokim poziomie - powyżej 70%. Pierwszy egzamin w pandemii - w roku 2020 poszedł uczniom najgorzej - średnie wyniki są najniższe w historii formuły 2015. Jednak podobnie jak na egzaminie z matematyki w latach 2021 i 2022 wyniki są wyższe niż przed pandemią - nie są to ogromne różnice (około 3-5%), ale co najważniejsze wyniki nie pogorszyły się drastycznie. Podczas pandemii widać jedynie spadek między rokiem 2022 a 2023 (o 4%). Można zatem ponownie wyciągnąć pozytywne wnioski. Covid-19 i nauczanie zdalne nie wpłynęło negatywnie na zdawalność egzaminu z języka angielskiego.
+
+### <br><font color=#D96675>4.3 Wnioski</font>
+
+Po przyjrzeniu się danym można zatem wyciągnąć pozytywne wioski. 
+
+**COVID-19 NIE PRZESZKODZIŁ W ZDOBYWANIU WIEDZY.**
+
+Nie ma znaczącyh różnic w średnich wynikach matur podstawowych w okresie przed i w trakcie pandemii. Nauczanie zdalne nie zniechęciło uczniów do nauki. Możliwe, że dało im więcej czasu naukę i dzięki temu nawet jeśli coś nie zostało im przekazane na zajęciach tak dobrze jak byłoby przekazane podczas stacjonarnych lekcji, mieli oni czas na własną naukę i uzupełnienie tej wiedzy. Jeśli chodzi o czynniki stresowe, uczniowie mogli nauczyć się reagowania na stres podczas wcześniejszych lat nauki, więc ten czynnik również mógł nie mieć negatywnego wpływu na wyniki egzaminów. Jednak widoczna była róznica w zdawalności matur. Między rokiem 2020 a rokiem 2023 o okolo 20 000 osób więcej zdało maturę, więc w tej kwestii można wyciągnąć wnioski, że jeśli uczniowie byli zmotywowani to pandemia nie stała im na przeszkodzie w osiągnięciu swoich wymarzonych celów.
