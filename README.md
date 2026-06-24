@@ -36,9 +36,9 @@ Czy pandemia pogłębiła różnice płciowe w zdawalności?
 
 ## Uwaga dotycząca danych
 
-Z uwagi na brak zapisanego źródła oryginalnych danych oraz ich niedostępność, projekt w obecnej wersji nie może zostać uruchomiony w pełni. Dane wykorzystywane w analizie pochodziły z publicznie dostępnych raportów Centralnej Komisji Egzaminacyjnej (CKE) dotyczących wyników egzaminu maturalnego w Polsce w latach 2015–2023, z podziałem m.in. na płeć oraz liczbę zdających.
+RRepozytorium zawiera kompletny kod analityczny oraz wygenerowane raporty podsumowujące. Analiza została przeprowadzona na podstawie historycznych, publicznie dostępnych raportów Centralnej Komisji Egzaminacyjnej (CKE) z lat 2015–2023, obejmujących m.in. płeć oraz liczbę zdających.
 
-W przyszłości planuję ponowne odtworzenie zbioru danych na podstawie dostępnych źródeł lub wykorzystanie alternatywnych danych edukacyjnych.
+Ze względu na specyfikę i archiwizację oryginalnych raportów źródłowych, repozytorium pełni funkcję statycznego portfolio analitycznego (snapshot). Prezentuje ono pełen proces myślowy: od manipulacji i przygotowania danych (data wrangling), przez wizualizację (ggplot2, plotly), aż po wnioski końcowe wygenerowane w formacie RMarkdown.
 
 
 ## Licencja
