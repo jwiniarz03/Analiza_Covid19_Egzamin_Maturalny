@@ -36,7 +36,7 @@ Czy pandemia pogłębiła różnice płciowe w zdawalności?
 
 ## Uwaga dotycząca danych
 
-RRepozytorium zawiera kompletny kod analityczny oraz wygenerowane raporty podsumowujące. Analiza została przeprowadzona na podstawie historycznych, publicznie dostępnych raportów Centralnej Komisji Egzaminacyjnej (CKE) z lat 2015–2023, obejmujących m.in. płeć oraz liczbę zdających.
+Repozytorium zawiera kompletny kod analityczny oraz wygenerowane raporty podsumowujące. Analiza została przeprowadzona na podstawie historycznych, publicznie dostępnych raportów Centralnej Komisji Egzaminacyjnej (CKE) z lat 2015–2023, obejmujących m.in. płeć oraz liczbę zdających.
 
 Ze względu na specyfikę i archiwizację oryginalnych raportów źródłowych, repozytorium pełni funkcję statycznego portfolio analitycznego (snapshot). Prezentuje ono pełen proces myślowy: od manipulacji i przygotowania danych (data wrangling), przez wizualizację (ggplot2, plotly), aż po wnioski końcowe wygenerowane w formacie RMarkdown.
 
